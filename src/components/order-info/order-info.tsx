@@ -1,23 +1,23 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
-import { useLocation, useParams } from 'react-router-dom';
-import {
-  selectFeedByNumber,
-  selectUserOrderByNumber
-} from '../../slices/feedSlice';
-import { useSelector } from '../../services/store';
+import { TIngredient, TOrder } from '@utils-types';
+import { useParams } from 'react-router-dom';
+import { getOrderByNumberToState } from '../../slices/feedSlice';
+import { useDispatch, useSelector } from '../../services/store';
 import { selectIngredients } from '../../slices/ingredientsSlice';
 
 export const OrderInfo: FC = () => {
-  const location = useLocation();
-
+  const dispatch = useDispatch();
   const number = Number(useParams().number);
-  const orderData = location.pathname.startsWith('/profile/orders/')
-    ? useSelector(selectUserOrderByNumber(number.toString()))
-    : useSelector(selectFeedByNumber(number.toString()));
 
+  const [orders, setOrders] = useState<TOrder[]>([]);
+
+  useEffect(() => {
+    dispatch(getOrderByNumberToState({ number, setState: setOrders }));
+  }, []);
+
+  const orderData = orders.length ? orders[0] : null;
   const ingredients: TIngredient[] = useSelector(selectIngredients);
 
   /* Готовим данные для отображения */

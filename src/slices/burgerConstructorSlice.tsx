@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TConstructorIngredient, TIngredient } from '@utils-types';
 import { RootState } from '../services/store';
 import { postOrderThunk } from './orderSlice';
+import { v4 as uuidv4 } from 'uuid';
 
 function generateId() {
   return Math.random().toString(36).substring(2);
@@ -22,7 +23,7 @@ export const constructorSlice = createSlice({
   initialState,
   reducers: {
     addIngredient: (state, { payload }: PayloadAction<TIngredient>) => {
-      const ingredient = { ...payload, id: generateId() };
+      const ingredient = { ...payload, id: uuidv4() };
       if (payload.type === 'bun') {
         state.bun = ingredient;
       } else {

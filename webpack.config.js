@@ -81,7 +81,8 @@ module.exports = {
       '@selectors': path.resolve(__dirname, './src/services/selectors')
     },
     fallback: {
-      crypto: require.resolve('crypto-browserify')
+      crypto: require.resolve('crypto-browserify'),
+      vm: require.resolve('vm-browserify')
     }
   },
   output: {
