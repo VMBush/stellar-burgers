@@ -10,8 +10,9 @@ export const ProtectedRoute = ({
   reverse?: boolean;
   children: React.ReactElement;
 }) => {
-  const { user, isInit, isLoading } = useSelector((store: RootState) => store);
-  // debugger;
+  const { user, isInit, isLoading } = useSelector(
+    (store: RootState) => store.user
+  );
   if (!isInit || isLoading) {
     return <Preloader />;
   }

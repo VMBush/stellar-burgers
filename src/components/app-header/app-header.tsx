@@ -1,10 +1,8 @@
 import { FC } from 'react';
 import { AppHeaderUI } from '@ui';
 import { useSelector } from 'react-redux';
-import { RootState } from 'src/services/store';
+import { selectUserName } from '../../slices/userSlice';
 
 export const AppHeader: FC = () => (
-  <AppHeaderUI
-    userName={useSelector((state: RootState) => state.user?.name) || ''}
-  />
+  <AppHeaderUI userName={useSelector(selectUserName) || ''} />
 );

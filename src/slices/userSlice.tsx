@@ -1,18 +1,23 @@
-import { TIngredient, TUser } from '@utils-types';
+import { TUser } from '@utils-types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
-  getIngredientsApi,
+  forgotPasswordApi,
   getUserApi,
   loginUserApi,
   logoutApi,
-  registerUserApi
+  orderBurgerApi,
+  registerUserApi,
+  TLoginData,
+  TRegisterData,
+  updateUserApi
 } from '@api';
 import { deleteCookie, setCookie } from '../utils/cookie';
+import { RootState } from '../services/store';
 
 export const loginUserThunk = createAsyncThunk(
   'user/login',
-  ({ email, password }: { email: string; password: string }) =>
-    loginUserApi({ email, password }).then((data) => {
+  (loginData: TLoginData) =>
+    loginUserApi(loginData).then((data) => {
       localStorage.setItem('refreshToken', data.refreshToken);
       setCookie('accessToken', data.accessToken);
       return { user: data.user };
@@ -21,20 +26,17 @@ export const loginUserThunk = createAsyncThunk(
 
 export const registerUserThunk = createAsyncThunk(
   'user/register',
-  ({
-    email,
-    password,
-    name
-  }: {
-    email: string;
-    password: string;
-    name: string;
-  }) =>
-    registerUserApi({ email, name, password }).then((data) => {
+  (userData: TRegisterData) =>
+    registerUserApi(userData).then((data) => {
       localStorage.setItem('refreshToken', data.refreshToken);
       setCookie('accessToken', data.accessToken);
       return { user: data.user };
     })
+);
+
+export const forgotPasswordThunk = createAsyncThunk(
+  'user/forgotPassword',
+  (email: string) => forgotPasswordApi({ email })
 );
 
 export const getUserThunk = createAsyncThunk('user/get', () => getUserApi());
@@ -46,25 +48,21 @@ export const logoutThunk = createAsyncThunk('user/logout', () =>
   })
 );
 
-export const getIngredientsThunk = createAsyncThunk('ingredients/get', () =>
-  getIngredientsApi()
+export const updateUserThunk = createAsyncThunk(
+  'user/update',
+  (userData: Partial<TRegisterData>) => updateUserApi(userData)
 );
 
 export type userState = {
   isInit: boolean;
   isLoading: boolean;
   user: TUser | null;
-
-  isIngredientsLoading: boolean;
-  ingredients: TIngredient[];
 };
 
 const initialState: userState = {
   isInit: false,
   isLoading: false,
-  user: null,
-  isIngredientsLoading: false,
-  ingredients: []
+  user: null
 };
 
 export const userSlice = createSlice({
@@ -122,23 +120,22 @@ export const userSlice = createSlice({
       state.user = null;
     });
 
-    builder.addCase(getIngredientsThunk.pending, (state) => {
-      state.isIngredientsLoading = true;
+    builder.addCase(updateUserThunk.pending, (state) => {
+      state.isLoading = true;
     });
-    builder.addCase(getIngredientsThunk.rejected, (state) => {
-      state.isIngredientsLoading = false;
+    builder.addCase(updateUserThunk.rejected, (state) => {
+      state.isLoading = false;
     });
-    builder.addCase(getIngredientsThunk.fulfilled, (state, { payload }) => {
-      state.ingredients = payload;
-      state.isIngredientsLoading = false;
+    builder.addCase(updateUserThunk.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.user = payload.user;
     });
-  },
-  selectors: {
-    selectIngredient: (state, id) =>
-      state.ingredients.find((el) => el._id === id)
   }
 });
 
+export const selectUserName = (state: RootState) => state.user.user?.name;
+export const selectUser = (state: RootState) => state.user.user;
+
 export const { init } = userSlice.actions;
-export const { selectIngredient } = userSlice.selectors;
+
 export default userSlice.reducer;

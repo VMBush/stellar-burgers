@@ -17,11 +17,8 @@ import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { AppDispatch } from 'src/services/store';
 import { useDispatch } from 'react-redux';
 import { useCallback, useEffect } from 'react';
-import {
-  getIngredientsThunk,
-  getUserThunk,
-  init
-} from '../../slices/userSlice';
+import { getUserThunk, init } from '../../slices/userSlice';
+import { getIngredientsThunk } from '../../slices/ingredientsSlice';
 import { getCookie } from '../../utils/cookie';
 import { ProtectedRoute } from '../protected-route';
 
@@ -45,15 +42,16 @@ const App = () => {
     dispatch(getIngredientsThunk());
   }, []);
 
-  const onModalClose = useCallback(
-    () => navigate(location.state?.background || '/', { replace: true }),
-    []
-  );
+  const onModalClose = useCallback(() => {
+    navigate(location.state?.background.pathname || '/', { replace: true });
+  }, [location]);
 
   return (
     <div className={styles.app}>
       <AppHeader />
-      <Routes location={location.state?.background || location.pathname}>
+      <Routes
+        location={location.state?.background.pathname || location.pathname}
+      >
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
         <Route
