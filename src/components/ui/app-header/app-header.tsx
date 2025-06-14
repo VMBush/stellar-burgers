@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import styles from './app-header.module.css';
 import { TAppHeaderUIProps } from './type';
 import {
@@ -7,29 +7,60 @@ import {
   Logo,
   ProfileIcon
 } from '@zlden/react-developer-burger-ui-components';
+import { Link, NavLink, useLocation, useMatch } from 'react-router-dom';
 
-export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
-  <header className={styles.header}>
-    <nav className={`${styles.menu} p-4`}>
-      <div className={styles.menu_part_left}>
-        <>
-          <BurgerIcon type={'primary'} />
-          <p className='text text_type_main-default ml-2 mr-10'>Конструктор</p>
-        </>
-        <>
-          <ListIcon type={'primary'} />
-          <p className='text text_type_main-default ml-2'>Лента заказов</p>
-        </>
-      </div>
-      <div className={styles.logo}>
-        <Logo className='' />
-      </div>
-      <div className={styles.link_position_last}>
-        <ProfileIcon type={'primary'} />
-        <p className='text text_type_main-default ml-2'>
-          {userName || 'Личный кабинет'}
-        </p>
-      </div>
-    </nav>
-  </header>
-);
+export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
+  const location = useLocation();
+
+  const getLinkActiveClass = ({ isActive }: { isActive: boolean }) =>
+    `${styles.link} ` + (isActive ? `${styles.link_active}` : '');
+
+  const getIconActivationType = useCallback(
+    (linkPathPattern: string) =>
+      useMatch(linkPathPattern) ? 'primary' : 'secondary',
+    []
+  );
+  return (
+    <header className={styles.header}>
+      <nav className={`${styles.menu} p-4`}>
+        <div className={styles.menu_part_left}>
+          <>
+            <NavLink className={getLinkActiveClass} to='/'>
+              <BurgerIcon type={getIconActivationType('/')} />
+              <p className='text text_type_main-default ml-2 mr-10'>
+                Конструктор
+              </p>
+            </NavLink>
+          </>
+          <>
+            <NavLink className={getLinkActiveClass} to='/feed'>
+              <ListIcon type={getIconActivationType('/feed/:id?')} />
+              <p className='text text_type_main-default ml-2'>Лента заказов</p>
+            </NavLink>
+          </>
+        </div>
+        <Link to='/'>
+          <div className={styles.logo}>
+            <Logo className='' />
+          </div>
+        </Link>
+        <div className={styles.link_position_last}>
+          <NavLink className={getLinkActiveClass} to='/profile'>
+            <ProfileIcon type={getIconActivationType('/profile/*')} />
+            <p className='text text_type_main-default ml-2'>
+              {userName || 'Личный кабинет'}
+            </p>
+          </NavLink>
+        </div>
+      </nav>
+    </header>
+  );
+};
+
+function getLinkActiveClass(currentPath: string, linkPath: string) {
+  return currentPath === linkPath ? styles.link_active : '';
+}
+
+function getIconActivationType(linkPathPattern: string) {
+  return useMatch(linkPathPattern) ? 'primary' : 'secondary';
+}

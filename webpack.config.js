@@ -80,10 +80,15 @@ module.exports = {
       '@slices': path.resolve(__dirname, './src/services/slices'),
       '@selectors': path.resolve(__dirname, './src/services/selectors')
     }
+    // fallback: {
+    //   crypto: require.resolve('crypto-browserify'),
+    //   vm: require.resolve('vm-browserify')
+    // }
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: '/'
   },
   devServer: {
     static: path.join(__dirname, './dist'),

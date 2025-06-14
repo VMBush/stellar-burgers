@@ -4,6 +4,7 @@
 .menu {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   max-width: 1240px;
   height: 56px;
   margin: 0 auto;
