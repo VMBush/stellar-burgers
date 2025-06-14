@@ -21,6 +21,7 @@ import { getUserThunk, init } from '../../slices/userSlice';
 import { getIngredientsThunk } from '../../slices/ingredientsSlice';
 import { getCookie } from '../../utils/cookie';
 import { ProtectedRoute } from '../protected-route';
+import { ModalFull } from '../modal-full/modal-full';
 
 const App = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -100,13 +101,33 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path='/feed/:number' element={<OrderInfo />} />
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route
+          path='/feed/:number'
+          element={
+            <ModalFull
+              title={`#${location.pathname.split('/').at(-1)?.padStart(6, '0')}`}
+            >
+              <OrderInfo />
+            </ModalFull>
+          }
+        />
+        <Route
+          path='/ingredients/:id'
+          element={
+            <ModalFull title='Детали ингредиента'>
+              <IngredientDetails />
+            </ModalFull>
+          }
+        />
         <Route
           path='/profile/orders/:number'
           element={
             <ProtectedRoute>
-              <OrderInfo />
+              <ModalFull
+                title={`#${location.pathname.split('/').at(-1)?.padStart(6, '0')}`}
+              >
+                <OrderInfo />
+              </ModalFull>
             </ProtectedRoute>
           }
         />

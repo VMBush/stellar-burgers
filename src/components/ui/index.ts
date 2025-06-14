@@ -8,6 +8,7 @@ export * from './ingredient-details';
 export * from './ingredients-category';
 export * from './modal';
 export * from './modal-overlay';
+export * from './modal-full';
 export * from './order-card';
 export * from './order-details';
 export * from './order-info';
